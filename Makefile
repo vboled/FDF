@@ -3,26 +3,71 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bdong <marvin@42.fr>                       +#+  +:+       +#+         #
+#    By: gweasley <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2019/09/03 16:11:47 by bdong             #+#    #+#              #
-#    Updated: 2019/11/19 20:30:55 by bdong            ###   ########.fr        #
+#    Created: 2020/03/01 11:21:29 by gweasley          #+#    #+#              #
+#    Updated: 2020/03/01 11:21:36 by gweasley         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-INC = includes
-all: $(NAME)
-$(NAME): $(OBJ) $(INC)
-	ar rc  $(NAME) $(OBJ)
-	ranlib $(NAME)
+NAME	= fdf
 
-$(OBJ): %.o : src/%.c
-	gcc -Wall -Werror -Wextra -I $(INC) -c $<
+SRC		= main.c \
+		  color.c \
+		  file_work.c \
+		  get_next_line.c \
+		  memory_work_1.c \
+		  memory_work.c \
+		  points_work.c \
+		  print.c \
+		  rotation.c \
+		  scaling.c \
+		  shift.c \
+		  window_work.c 
+
+OBJ		= $(addprefix $(OBJDIR),$(SRC:.c=.o))
+
+CC		= gcc
+CFLAGS	= -Wall -Wextra -Werror -g
+
+MLX		= ./miniLibX/
+MLX_LIB	= $(addprefix $(MLX),mlx.a)
+MLX_INC	= -I ./miniLibX
+MLX_LNK	= -L ./miniLibX -l mlx -framework OpenGL -framework AppKit
+
+FT		= ./libft/
+FT_LIB	= $(addprefix $(FT),libft.a)
+FT_INC	= -I ./libft
+FT_LNK	= -L ./libft -l ft
+
+SRCDIR	= ./src/
+INCDIR	= ./includes/
+OBJDIR	= ./obj/
+
+all: obj $(FT_LIB) $(MLX_LIB) $(NAME)
+
+obj:
+	mkdir -p $(OBJDIR)
+
+$(OBJDIR)%.o:$(SRCDIR)%.c
+	$(CC) $(CFLAGS) $(MLX_INC) $(FT_INC) -I $(INCDIR) -o $@ -c $<
+
+$(FT_LIB):
+	make -C $(FT)
+
+$(MLX_LIB):
+	make -C $(MLX)
+
+$(NAME): $(OBJ)
+	$(CC) $(OBJ) $(MLX_LNK) $(FT_LNK) -lm -o $(NAME)
 
 clean:
-	/bin/rm -f $(OBJ)
+	rm -rf $(OBJDIR)
+	make -C $(FT) clean
+	make -C $(MLX) clean
 
 fclean: clean
-	/bin/rm -f $(NAME)
+	rm -rf $(NAME)
+	make -C $(FT) fclean
 
 re: fclean all

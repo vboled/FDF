@@ -14,22 +14,24 @@
 
 int		new_x(t_count *c, int i, int j)
 {
-	return (c->map[i][j].x * cos(*c->fy) * cos(*c->fz) + c->map[i][j].y * sin(*c->fx) * sin(*c->fy) * cos (*c->fz)
-	+ c->map[i][j].z * cos (*c->fx) * sin (*c->fy) * cos (*c->fz) - c->map[i][j].y * cos(*c->fx) * sin(*c->fz)
-	+ c->map[i][j].z * sin(*c->fx) * sin(*c->fz));
+	return (c->map_new[i][j].x * cos(*c->fy) * cos(*c->fz) + c->map_new[i][j].y
+	* sin(*c->fx) * sin(*c->fy) * cos(*c->fz) + c->map_new[i][j].z * cos(*c->fx)
+	* sin(*c->fy) * cos(*c->fz) - c->map_new[i][j].y * cos(*c->fx) * sin(*c->fz)
+	+ c->map_new[i][j].z * sin(*c->fx) * sin(*c->fz));
 }
 
 int		new_y(t_count *c, int i, int j)
 {
-	return (c->map[i][j].x * cos(*c->fy) * sin(*c->fy) + c->map[i][j].y * sin(*c->fx) * sin(*c->fy) * sin(*c->fz)
-	+ c->map[i][j].z * cos(*c->fx) * sin(*c->fy) * sin(*c->fz) + c->map[i][j].y * cos(*c->fx) * cos(*c->fz)
-	- c->map[i][j].z * sin(*c->fx) * sin(*c->fz));
+	return (c->map_new[i][j].x * cos(*c->fy) * sin(*c->fy) + c->map_new[i][j].y
+	* sin(*c->fx) * sin(*c->fy) * sin(*c->fz) + c->map_new[i][j].z * cos(*c->fx)
+	* sin(*c->fy) * sin(*c->fz) + c->map_new[i][j].y * cos(*c->fx) * cos(*c->fz)
+	- c->map_new[i][j].z * sin(*c->fx) * sin(*c->fz));
 }
 
 int		new_z(t_count *c, int i, int j)
 {
-	return (-c->map[i][j].x * sin(*c->fy) + c->map[i][j].y * sin(*c->fx) * cos(*c->fy)
-	+ c->map[i][j].z * cos(*c->fx) * cos(*c->fy));
+	return (-c->map_new[i][j].x * sin(*c->fy) + c->map_new[i][j].y *
+	sin(*c->fx) * cos(*c->fy) + c->map_new[i][j].z * cos(*c->fx) * cos(*c->fy));
 }
 
 void	rot(t_count *c)
@@ -56,21 +58,21 @@ void	rot(t_count *c)
 	}
 }
 
-void    rotation(t_count *c, int key)
+void	rotation(t_count *c, int key)
 {
-    double     step;
+	double		step;
 
-    step = 0.01;
-    if (key == 0)
-        *c->fx += step;
-    if (key == 6)
-        *c->fx -= step;
-    if (key == 1)
-        *c->fy += step;
-    if (key == 7)
-        *c->fy -= step;
-    if (key == 2)
-        *c->fz += step;
-    if (key == 8)
-        *c->fz -= step;
+	step = 0.1;
+	if (key == 0)
+		*c->fx += step;
+	if (key == 6)
+		*c->fx -= step;
+	if (key == 1)
+		*c->fy += step;
+	if (key == 7)
+		*c->fy -= step;
+	if (key == 2)
+		*c->fz += step;
+	if (key == 8)
+		*c->fz -= step;
 }

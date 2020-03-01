@@ -5,113 +5,82 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gweasley <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/17 13:32:28 by gweasley          #+#    #+#             */
-/*   Updated: 2020/02/17 13:51:53 by gweasley         ###   ########.fr       */
+/*   Created: 2020/03/01 12:30:31 by gweasley          #+#    #+#             */
+/*   Updated: 2020/03/01 12:30:32 by gweasley         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
-t_point    **map_alloc(int row, int col)
+void			erase_struct(t_count *c)
 {
-    int i;
-    int j;
-    t_point **map;
+	c->map = 0;
+	c->map_new = 0;
+	c->fx = 0;
+	c->fy = 0;
+	c->fz = 0;
+	c->shift_x = 0;
+	c->shift_y = 0;
+	c->scale = 0;
+	c->mlx = 0;
+	c->win = 0;
+	c->extr = 0;
+	c->r = 0;
+	c->stretch = 0;
+}
 
-    i = 0;
-    j = 0;
-    if (!(map = (t_point **)malloc(sizeof(t_point *) * row)))
-		return (0);
-    while (i < row)
+void			free_map(t_point **map, int row)
+{
+	int i;
+
+	i = 0;
+	if (map)
 	{
-		if (!(map[i] = (t_point *)malloc(sizeof(t_point) * col)))
+		while (i < row)
 		{
-			while (j < i)
-			{
-				free(map[j]);
-				j++;
-			}
-			free(map);
-			return (0);
+			if (map[i])
+				free(map[i]);
+			i++;
 		}
-		i++;
+		free(map);
 	}
-    return (map);
 }
 
-void    erase_struct(t_count *c)
+void			free_struct_1(t_count *c)
 {
-    c->map = 0;
-    c->map_new = 0;
-    c->fx = 0;
-    c->fy = 0;
-    c->fz = 0;
-    c->shift_x = 0;
-    c->shift_y = 0;
-    c->shift_z = 0;
-    c->mlx = 0;
-    c->win = 0;
-}
-
-void    free_map(t_point **map, int row)
-{
-    int i;
-
-    i = 0;
-    if (map)
-    {
-        while (i < row)
-        {
-            if (map[i])
-                free(map[i]);
-            free(map);
-            i++;
-        }
-    }
-}
-
-void    free_struct(t_count *c)
-{
-    free_map(c->map, c->count_of_str);
-    free_map(c->map_new, c->count_of_str);
-    if (c->mlx)
-        free(c->mlx);
-    if (c->win)
-        free(c->win);
-    if (c->fx)
-        free(c->fx);
-    if (c->fy)
-        free(c->fy);
-    if (c->fz)
-        free(c->fz);
-    if (c->shift_x)
-        free(c->shift_x);
-    if (c->shift_y)
-        free(c->shift_y);
-    if (c->shift_z)
-        free(c->shift_z);    
-}
-
-int		allocate_mem(t_count *c)
-{
-
-    if (!(c->map = map_alloc(c->count_of_str, c->count_of_point)) ||
-    !(c->map_new = map_alloc(c->count_of_str, c->count_of_point)))
-        return (0);
-	if (!(c->fx = (double *)malloc(sizeof(double))) || 
-	!(c->fy = (double *)malloc(sizeof(double))) || 
-	!(c->fz = (double *)malloc(sizeof(double))) || 
-    !(c->shift_x = (int *)malloc(sizeof(int))) ||
-    !(c->shift_y = (int *)malloc(sizeof(int))) ||
-    !(c->shift_z = (int *)malloc(sizeof(int))))
+	if (c->scale)
+		free(c->scale);
+	if (c->stretch)
+		free(c->stretch);
+	if (c->r)
+		free(c->r);
+	if (c->extr)
 	{
-		return (0);
+		if (c->extr->max)
+			free(c->extr->max);
+		if (c->extr->min)
+			free(c->extr->min);
+		free(c->extr);
 	}
-    *c->fx = 0.0;
-    *c->fy = 0.0;
-    *c->fz = 0.0;
-    *c->shift_x = 0;
-    *c->shift_y = 0;
-    *c->shift_z = 0;
-	return (1);
+}
+
+void			free_struct(t_count *c)
+{
+	free_map(c->map, c->count_of_str);
+	free_map(c->map_new, c->count_of_str);
+	if (c->mlx)
+		free(c->mlx);
+	if (c->win)
+		free(c->win);
+	if (c->fx)
+		free(c->fx);
+	if (c->fy)
+		free(c->fy);
+	if (c->fz)
+		free(c->fz);
+	if (c->shift_x)
+		free(c->shift_x);
+	if (c->shift_y)
+		free(c->shift_y);
+	free_struct_1(c);
 }

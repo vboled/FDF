@@ -56,41 +56,21 @@ int		hex_atoi(const char *str)
 	return (res);
 }
 
-void	print_map(t_count c)///trash
-{
-	int i = 0;
-	int j;
-
-	while (i < 5)
-	{
-		j = 0;
-		while (j < c.count_of_point)
-			printf("x = %d ", c.map[i][j++].x);
-		printf("\n");
-		j = 0;
-		while (j < c.count_of_point)
-			printf("y = %d ", c.map[i][j++].y);
-		printf("\n");
-		j = 0;
-		while (j < c.count_of_point)
-			printf("z = %d ", c.map[i][j++].z);
-		printf("\n");
-		printf("\n");
-		i++;
-	}
-}
-
-void	put_in_points(t_point *map, char *line, int y, int n)
+void	put_in_points(t_point *map, char *line, int k, t_count c)
 {
 	int		i;
 
 	i = 0;
-	while (i < n)
+	while (i < c.count_of_point)
 	{
-		map->x = 500 * i / n;
-		map->y = y;
-		map->z = ft_atoi(line);
-		map->color = 0xFFFFFF;
+		map->x = 500 * i / c.count_of_point;
+		map->y = 500 * k / c.count_of_str;
+		map->z = my_atoi(&line);
+		if (map->z < *c.extr->min || *c.extr->min == -1)
+			*c.extr->min = map->z;
+		if (map->z > *c.extr->max)
+			*c.extr->max = map->z;
+		map->color = 0;
 		while (*line && *line != ' ')
 		{
 			if (*line == ',')
@@ -104,25 +84,37 @@ void	put_in_points(t_point *map, char *line, int y, int n)
 	}
 }
 
-void	iso(t_count c)
+void	iso(t_count *c)
 {
-	int i;
-	int j;
-	int tmp1;
-	int tmp2;
+	*c->fz = 0.61540309;
+	*c->fy = 0.61540309;
+	*c->fx = 0.785398;
+	*c->r = 0;
+}
+
+void	center(t_count *c)
+{
+	int		i;
+	int		j;
+	int		det;
+
 	i = 0;
-	while (i < c.count_of_str)
+	if (*c->r != 0)
 	{
-		j = 0;
-		while (j < c.count_of_point)
+		while (i < c->count_of_str)
 		{
-			tmp1 = (c.map[i][j].x * sqrt(3) - c.map[i][j].z * sqrt(3)) / sqrt(6);
-			tmp2 = c.map[i][j].x / sqrt(6) + 2 * c.map[i][j].y / sqrt(6) + c.map[i][j].z / sqrt(6); 
-			c.map[i][j].z = (-c.map[i][j].y * sqrt(2) + c.map[i][j].x * sqrt(2) + c.map[i][j].z * sqrt(2)) / sqrt(6);
-			c.map[i][j].x = tmp1;
-			c.map[i][j].y = tmp2;
-			j++;
+			j = 0;
+			det = *c->r + c->map_new[i][j].z;
+			while (j < c->count_of_point)
+			{
+				if (det)
+				{
+					c->map_new[i][j].x = *c->r * c->map[i][j].x / det;
+					c->map_new[i][j].y = *c->r * c->map[i][j].y / det;
+				}
+				j++;
+			}
+			i++;
 		}
-		i++;
 	}
 }

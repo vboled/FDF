@@ -12,14 +12,14 @@
 
 #include "fdf.h"
 
-void	put_line1(t_count c, t_point a, t_line l, int color)
+void	put_line1(t_count c, t_point a, t_point b, t_line l)
 {
 	int d;
 	int d1;
 	int d2;
 	int i;
 
-	mlx_pixel_put(c.mlx, c.win, a.x, a.y, color);
+	mlx_pixel_put(c.mlx, c.win, a.x, a.y, a.color);
 	a.x += l.sx;
 	i = 1;
 	d = (l.dy << 1) - l.dx;
@@ -34,13 +34,14 @@ void	put_line1(t_count c, t_point a, t_line l, int color)
 		}
 		else
 			d += d1;
-		mlx_pixel_put(c.mlx, c.win, a.x, a.y, color);
+		mlx_pixel_put(c.mlx, c.win, a.x, a.y,
+		get_color(a.color, b.color, 1 - (double)i / l.dx));
 		a.x += l.sx;
 		i++;
 	}
 }
 
-void	put_line2(t_count c, t_point a, t_line l, int color)
+void	put_line2(t_count c, t_point a, t_point b, t_line l)
 {
 	int d;
 	int d1;
@@ -50,7 +51,7 @@ void	put_line2(t_count c, t_point a, t_line l, int color)
 	d = (l.dx << 1) - l.dy;
 	d1 = l.dx << 1;
 	d2 = (l.dx - l.dy) << 1;
-	mlx_pixel_put(c.mlx, c.win, a.x, a.y, color);
+	mlx_pixel_put(c.mlx, c.win, a.x, a.y, a.color);
 	a.y += l.sy;
 	i = 1;
 	while (i <= l.dy)
@@ -62,15 +63,34 @@ void	put_line2(t_count c, t_point a, t_line l, int color)
 		}
 		else
 			d += d1;
-		mlx_pixel_put(c.mlx, c.win, a.x, a.y, color);
+		mlx_pixel_put(c.mlx, c.win, a.x, a.y,
+		get_color(a.color, b.color, 1 - (double)i / l.dy));
 		a.y += l.sy;
 		i++;
 	}
 }
 
-void	p_line(t_count c, t_point a, t_point b, int color)
+int		num_of_point(t_line l)
 {
-	t_line l;
+	int		i;
+
+	i = 0;
+	if (l.dy < l.dx)
+	{
+		while (i < l.dx)
+			i++;
+	}
+	else
+	{
+		while (i < l.dy)
+			i++;
+	}
+	return (i);
+}
+
+void	p_line(t_count c, t_point a, t_point b)
+{
+	t_line		l;
 
 	a.x += 300;
 	b.x += 300;
@@ -81,58 +101,34 @@ void	p_line(t_count c, t_point a, t_point b, int color)
 	l.sx = (b.x >= a.x) ? (1) : (-1);
 	l.sy = (b.y >= a.y) ? (1) : (-1);
 	if (l.dy < l.dx)
-		put_line1(c, a, l, color);
+		put_line1(c, a, b, l);
 	else
-		put_line2(c, a, l, color);
+		put_line2(c, a, b, l);
 }
 
-void	print_work_space(t_count c)
-{
-	t_point		a;
-	t_point		b;
-
-	a.x = 200;
-	a.y = 0;
-	b.x = 697;
-	b.y = 0;
-	p_line(c, a, b, 0xFFFFFF);
-	b.y = 497;
-	b.x = 200;
-	p_line(c, a, b, 0xFFFFFF);
-	a.x = 697;
-	a.y = 497;
-	b.x = 697;
-	b.y = 0;
-	p_line(c, a, b, 0xFFFFFF);
-	b.x = 200;
-	b.y = 497;
-	p_line(c, a, b, 0xFFFFFF);
-}
-
-void	print_field(t_count* c)
+void	print_field(t_count *c)
 {
 	int		i;
 	int		j;
 
 	i = 0;
 	j = 0;
-	p_line(*c, (c->map_new)[0][0], (c->map_new)[0][c->count_of_point - 1], 0xd9701a); // orange
 	while (i < c->count_of_str - 1)
 	{
 		j = 0;
 		while (j < c->count_of_point - 1)
-		{		
-			p_line(*c, c->map_new[i][j], c->map_new[i + 1][j], 0xd9701a); // orange
-			p_line(*c, c->map_new[i][j], c->map_new[i][j + 1], 0xd9701a); // white
+		{
+			p_line(*c, c->map_new[i][j], c->map_new[i + 1][j]);
+			p_line(*c, c->map_new[i][j], c->map_new[i][j + 1]);
 			j++;
 		}
-		p_line(*c, c->map_new[i][j], c->map_new[i + 1][j], 0xd9701a); // turquoise
+		p_line(*c, c->map_new[i][j], c->map_new[i + 1][j]);
 		i++;
 	}
 	j = 0;
 	while (j < c->count_of_point - 1)
-	{		
-		p_line(*c, c->map_new[i][j], c->map_new[i][j + 1], 0xd9701a); // white
+	{
+		p_line(*c, c->map_new[i][j], c->map_new[i][j + 1]);
 		j++;
 	}
 }
